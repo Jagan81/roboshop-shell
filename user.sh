@@ -1,4 +1,4 @@
 component=user
 source common.sh
 
-nodejs
+nodejs_app_setup

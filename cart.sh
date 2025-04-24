@@ -1,4 +1,4 @@
 component=cart
 source common.sh
 
-nodejs
+nodejs_app_setup
