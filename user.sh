@@ -1,3 +1,7 @@
+component=user
+source common.sh
+
+
 dnf module disable nodejs -y
 dnf module enable nodejs:20 -y
 
@@ -16,6 +20,4 @@ unzip /tmp/user.zip
 cd /app
 npm install
 
-systemctl daemon-reload
-systemctl enable user
-systemctl restart user
+systemd_setup
