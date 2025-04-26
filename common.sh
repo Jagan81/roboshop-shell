@@ -1,5 +1,6 @@
 systemd_setup() {
   print_head Copy SystemD Service file
+  rm -f /etc/systemd/system/$component.service &>> $log_file
   cp $component.service /etc/systemd/system/$component.service &>> $log_file
   exit_status_print $?
 
