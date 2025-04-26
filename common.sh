@@ -1,49 +1,76 @@
 systemd_setup() {
-  systemctl daemon-reload
-  systemctl enable $component
-  systemctl restart $component
+  print_head Copy SystemD Service file
+  cp $component.service /etc/systemd/system/$component.service &>> $log_file
+
+ print_head Start Service
+  systemctl daemon-reload &>> $log_file
+  systemctl enable $component &>> $log_file
+  systemctl restart $component &>> $log_file
 }
 
 artifact_download() {
-  rm -rf /App
-  mkdir /App
-  curl -L -o /tmp/$component.zip https://roboshop-artifacts.s3.amazonaws.com/component-v3.zip
+  print_head Add Application user
+  useradd roboshop &>> $log_file
+
+  print_head Remove existing application code
+  rm -rf /App &>> $log_file
+
+  print_head create Application directory
+  mkdir /App &>> $log_file
+
+  print_head Download Application Content
+  curl -L -o /tmp/$component.zip https://roboshop-artifacts.s3.amazonaws.com/component-v3.zip &>> $log_file
   cd /app
-  unzip /tmp/$component.zip
+
+  print_head Extract Application Content
+  unzip /tmp/$component.zip &>> $log_file
 }
 
-app_prereq() {
-  useradd roboshop
-    cp $component.service /etc/systemd/system/$component.service
-}
 
 nodejs_app_seetup() {
-  dnf module disable nodejs -y
-  dnf module enable nodejs:20 -y
-  dnf install nodejs -y
-  app_prereq
+  print_head Disable NodeJS default version
+  dnf module disable nodejs -y &>> $log_file
+
+  print_head Enable NodeJS 20
+  dnf module enable nodejs:20 -y &>> $log_file
+
+  print_head Install NodeJS
+  dnf install nodejs -y &>> $log_file
+
   artifact_download
   cd /app
-  npm install
+
+  print_head Install NodeJS Dependencies
+  npm install &>> $log_file
+
   systemd_setup
 }
 
 maven_app_setup() {
-  dnf install maven -y
-  app_prereq
+  print_head Install Maven
+  dnf install maven -y &>> $log_file
+
   artifact_download
   cd /app
-  mvn clean package
-  mv target/$component-1.0.jar $component.jar
+
+  print_head Install Maven Dependencies
+  mvn clean package &>> $log_file
+  mv target/$component-1.0.jar $component.jar &>> $log_file
+
   systemd_setup
 }
 
 python_app_setup() {
-  dnf install python3 gcc python3-devel -y
-  app_prereq
+  print_head Install Python Packages
+  dnf install python3 gcc python3-devel -y &>> $log_file
+
+
   artifact_download
+
   cd /app
-  pip3 install -r requirements.txt
+
+  print_head Install Python Packages
+  pip3 install -r requirements.txt &>> $log_file
   systemd_setup
 }
 
