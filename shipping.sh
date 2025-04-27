@@ -6,13 +6,8 @@ source common.sh
   print_head Install MySQL Client
   dnf install mysql -y &>> $log_file
 
- print_head Load Schema
- mysql -h mysql-dev.jrdevops81.online -uroot -pRoboShop@1 < /app/db/schema.sql &>> $log_file
-
- print_head Load user creation
- mysql -h mysql-dev.jrdevops81.online -uroot -pRoboShop@1 < /app/db/app-user.sql &>> $log_file
-
- print_head Load Master Data
- mysql -h mysql-dev.jrdevops81.online -uroot -pRoboShop@1 < /app/db/master-data.sql &>> $log_file
+ for file in schema app-user master-data;do
+ print_head Load $file
+ mysql -h mysql-dev.jrdevops81.online -uroot -pRoboShop@1 < /app/db/$file.sql &>> $log_file
 
 
